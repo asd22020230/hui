@@ -129,8 +129,34 @@ public class CarDao {
     return count;
   }
 
+  //根据ID 查询小汽车
+
+  public Car find(Integer id) {
+    Car car = null;
+
+    try {
+      conn = DBUtil.getConnection();
+      String sql = "select id,name,price,create_date from car WHERE id=?";
+      ps = conn.prepareStatement(sql);
+      ps.setInt(1,id);
+      rs = ps.executeQuery();
+      if (rs.next()) {
+        car = new Car();
+        car.setId(rs.getInt(1)); // 根据字段索引获取值
+        car.setName(rs.getString("name")); // 根据字段名获取值
+        car.setPrice(rs.getDouble("price"));
+        car.setCreateDate(rs.getDate("create_date"));
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      DBUtil.close(conn, ps, rs);
+    }
+    return car;
+  }
+
   /**
-   * 根据 id 查询小汽车
+   * 根据账号密码登陆
    *
    * @param
    * @return

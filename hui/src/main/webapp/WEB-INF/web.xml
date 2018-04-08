@@ -29,6 +29,17 @@
 
 
   <servlet>
+    <servlet-name>CarServlet</servlet-name>
+    <servlet-class>com.javaweb.servlet.CarServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>CarServlet</servlet-name>
+    <url-pattern>/CarServlet</url-pattern>
+  </servlet-mapping>
+
+
+  <servlet>
     <servlet-name>SessionServlet</servlet-name>
     <servlet-class>com.javaweb.servlet.SessionServlet</servlet-class>
   </servlet>
