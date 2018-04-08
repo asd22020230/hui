@@ -1,6 +1,7 @@
 package com.javaweb.dao;
 
 import com.javaweb.pojo.Car;
+import com.javaweb.pojo.CarUser;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -16,6 +17,43 @@ public class CarDao {
   private Connection conn;
   private PreparedStatement ps;
   private ResultSet rs;
+
+    public int modifyuser(String password, String id) {
+        int count = 0;
+        try {
+            conn = DBUtil.getConnection();
+            String sql = "update caruser set password=?  where id=?";
+            ps = conn.prepareStatement(sql);
+            ps.setString(1,password);
+            ps.setInt(2,Integer.parseInt(id));
+            count = ps.executeUpdate(); // 返回值 1 成功; 0 失败
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.close(conn, ps, rs);
+        }
+        return count;
+    }
+
+  public int finduser(String id,String password) {
+    int count = 0;
+    try {
+      conn = DBUtil.getConnection();
+      String sql = "SELECT * FROM caruser WHERE id=? and password=?";
+      ps = conn.prepareStatement(sql);
+      ps.setInt(1, Integer.parseInt(id));
+      ps.setString(2,password);
+      rs= ps.executeQuery(); // 返回值 1 成功; 0 失败
+      if (rs.next()){
+        count=1;
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      DBUtil.close(conn, ps, rs);
+    }
+    return count;
+  }
 
   /**
    * 新增小汽车
@@ -94,31 +132,30 @@ public class CarDao {
   /**
    * 根据 id 查询小汽车
    *
-   * @param id
+   * @param
    * @return
    */
-  public Car find(Integer id) {
-    Car car = null;
+  public CarUser login(String name,String p) {
+    CarUser caruser = null;
     try {
       conn = DBUtil.getConnection();
-      String sql = "select id,name,price,create_date from car where id=?";
+      String sql = "select id,username,password from caruser where username=? and  password=?";
       ps = conn.prepareStatement(sql);
-      ps.setInt(1, id);
-
+      ps.setString(1, name);
+      ps.setString(2,p);
       rs = ps.executeQuery();
       if (rs.next()) {
-        car = new Car();
-        car.setId(rs.getInt(1)); // 根据字段索引获取值
-        car.setName(rs.getString("name")); // 根据字段名获取值
-        car.setPrice(rs.getDouble("price"));
-        car.setCreateDate(rs.getDate("create_date"));
+        caruser = new CarUser();
+        caruser.setId(rs.getInt(1)); // 根据字段索引获取值
+        caruser.setUsername(rs.getString("username")); // 根据字段名获取值
+        caruser.setPassword(rs.getString("password"));
       }
     } catch (SQLException e) {
       e.printStackTrace();
     } finally {
       DBUtil.close(conn, ps, rs);
     }
-    return car;
+    return caruser;
   }
 
   /**
@@ -127,11 +164,11 @@ public class CarDao {
    * @return
    */
   public List<Car> find() {
-    List<Car> cars = new ArrayList<>();
+    List<Car> cars = new ArrayList();
 
     try {
       conn = DBUtil.getConnection();
-      String sql = "select id,name,price,create_date from car";
+      String sql = "select id,name,price,create_date from car ";
       ps = conn.prepareStatement(sql);
       rs = ps.executeQuery();
       while (rs.next()) {
@@ -165,7 +202,7 @@ public class CarDao {
   public List<Car> find(
       Integer page, Integer pagesize, String sort, String order,
       String name, Double price) {
-    List<Car> cars = new ArrayList<>();
+    List<Car> cars = new ArrayList();
 
     try {
       conn = DBUtil.getConnection();
